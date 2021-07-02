@@ -21,7 +21,7 @@ def upload(request):
             object = action.cleaned_data.get('imageField')
             config = action.cleaned_data.get('imageConfig')
             image, path = create(object)
-            test_process(image, config)
+            true_process(image, config)
         else:
             print('No Image Uploaded')
     return render(request, 'index.html', {'path': path})
@@ -41,7 +41,7 @@ def video(request):
 def pre_process(data, path):
     image = open(path, "wb")
     image.write(data)
-    test_process(path, 0.4)
+    true_process(path, 0.4)
     image.close()
 
 
