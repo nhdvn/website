@@ -1,0 +1,98 @@
+.container {
+  text-align: center;
+  padding: 10px;
+  border-radius: 5pt;
+  min-width: 120px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.preview {
+  border: 2pt #0079bf dashed;
+  padding: 10px;
+  height: 500px;
+  width: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview img {
+  max-height: 100%;
+  max-width: 100%;
+  margin: auto;
+}
+
+.container #imageInput {
+  display: none;
+}
+
+.container #imageConfig {
+  height: 25px;
+}
+
+.container label {
+  display: block;
+  color: #FFF;
+  background: #0079bf;
+  padding: 0.5rem 0.6rem;
+  font-size: 120%;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.container button {
+  width: 100%;
+  background-color: #0079bf;
+  color: #FFF;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0.6rem;
+  font-size: 100%;
+  font-weight: bold;
+}
+
+.container button i {
+  font-size: 125%;
+  margin-right: 0.3rem;
+}
+.container button:hover i {
+  animation: shake 0.35s;
+}
+
+.container label i {
+  font-size: 125%;
+  margin-right: 0.3rem;
+}
+.container label:hover i {
+  animation: shake 0.35s;
+}
+  
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+  
+body {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-family: calibri;
+  max-width: 1000px;
+  margin: 10px auto;
+}
