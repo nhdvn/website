@@ -6,7 +6,7 @@ from pathlib import Path
 from .forms import Upload
 from .models import Image
 from .utils import test_process
-from .utils import true_process
+from .utils import true_process, video_process
 import cv2
 
 def upload(request):
@@ -41,16 +41,7 @@ def stream(request):
 
 
 def extract():
-    cap = cv2.VideoCapture(0) 
+    cap = cv2.VideoCapture(0)
 
-    while True:
-        ret, frame = cap.read()
-        path = 'media/videos/demo.jpg'
-
-        if not ret:
-            print("Error: failed to capture image")
-            break
-
-        cv2.imwrite(path, frame)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + open(path, 'rb').read() + b'\r\n')
+    for frame in video_process(cap, 0.4):
+        yield frame

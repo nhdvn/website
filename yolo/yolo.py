@@ -5,8 +5,11 @@ from PIL import Image as ImagePIL
 
 from .utils import *
 
-# model_path = '/home/potato/website/yolo/models/yolov4_1_3_608_608_static.onnx'
 model_path = '/home/potato/website/yolo/models/yolov4-tiny_1_3_416_416_static.onnx'
+# model_path = '/home/wan/Workspaces/hcmus_machine_learning/YOLO/website/yolo/models/yolov4-tiny_1_3_416_416_static.onnx'
+
+namesfile = '/home/potato/website/yolo/data/coco.names'
+# namesfile = '/home/wan/Workspaces/hcmus_machine_learning/YOLO/website/yolo/data/coco.names'
 
 def detect(session, image_src, conf_thresh):
 
@@ -22,9 +25,7 @@ def detect(session, image_src, conf_thresh):
 
     outputs = session.run(None, {input_name: img_in})
 
-    boxes = post_processing(img_in, conf_thresh, 0.6, outputs)
-
-    namesfile = '/home/potato/website/yolo/data/coco.names'
+    boxes = post_processing(img_in, conf_thresh, 0.6, outputs)    
 
     class_names = load_class_names(namesfile)
 
@@ -40,3 +41,20 @@ def predict(image_path, conf_thresh):
     image_dst = detect(session, image_src, conf_thresh)
 
     return image_dst
+
+def predict_video(cap, conf_thresh):
+    session = onnxruntime.InferenceSession(model_path)
+
+    while True:
+        ret, frame = cap.read()
+        path = 'media/videos/demo.jpg'
+
+        if not ret:
+            print("Error: failed to capture image")
+            break
+
+        image_dst = detect(session, frame, conf_thresh)
+
+        cv2.imwrite(path, image_dst)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + open(path, 'rb').read() + b'\r\n')

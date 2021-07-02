@@ -1,7 +1,7 @@
 
 from PIL import Image as ImagePIL
 from PIL import ImageDraw
-from yolo.yolo import predict
+from yolo.yolo import predict, predict_video
 
 def test_process(path, config):
     image = ImagePIL.open(path)
@@ -14,3 +14,7 @@ def true_process(image, config):
     image_dst = predict(image, config)
     predicted = ImagePIL.fromarray(image_dst)
     predicted.save(image)
+
+def video_process(cap, config):
+    for pred in predict_video(cap, config):
+        yield pred
