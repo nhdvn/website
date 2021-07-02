@@ -1,13 +1,17 @@
 
 from django.shortcuts import render
 from django.conf import settings
-from django.http import StreamingHttpResponse
+from django.http import HttpResponse
+from base64 import b64decode
 from pathlib import Path
 from .forms import Upload
 from .models import Image
 from .utils import test_process
-from .utils import true_process, video_process
-import cv2
+from .utils import true_process
+import json, random, string
+
+media_root = settings.MEDIA_ROOT
+
 
 def upload(request):
     path = ''
@@ -17,7 +21,7 @@ def upload(request):
             object = action.cleaned_data.get('imageField')
             config = action.cleaned_data.get('imageConfig')
             image, path = create(object)
-            true_process(image, config)
+            test_process(image, config)
         else:
             print('No Image Uploaded')
     return render(request, 'index.html', {'path': path})
@@ -25,23 +29,28 @@ def upload(request):
 
 def create(object):
     data = Image.objects.create(image = object)
-    path = data.image.url
-    name = Path(path).name
-    root = settings.MEDIA_ROOT
-    image = Path.joinpath(root, 'images', name)
-    return image, path
+    name = Path(data.image.url).name
+    image = Path.joinpath(media_root, 'image', name)
+    return image, data.image.url
 
 
 def video(request):
     return render(request, 'video.html')
 
 
-def stream(request):
-    return StreamingHttpResponse(extract(), content_type='multipart/x-mixed-replace; boundary=frame')
+def pre_process(data, path):
+    image = open(path, "wb")
+    image.write(data)
+    test_process(path, 0.4)
+    image.close()
 
 
-def extract():
-    cap = cv2.VideoCapture(0)
-
-    for frame in video_process(cap, 0.4):
-        yield frame
+def frame(request):
+    if request.method == 'POST':
+        data = b64decode(request.POST.get('data'))
+        name = random.choices(string.ascii_lowercase, k = 7)
+        name = ''.join(name) + '.jpg'
+        path = Path.joinpath(media_root, 'video', name)
+        pre_process(data, path)
+        result = {'path': '/media/video/' + name}
+    return HttpResponse(json.dumps(result), content_type='application/json')

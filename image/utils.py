@@ -8,6 +8,7 @@ def test_process(path, config):
     editor = ImageDraw.Draw(image)
     shape = [(50, 50), (1000, 1000)]
     editor.rectangle(shape, outline = 'red')
+    image = image.convert('RGB')
     image.save(path)
 
 def true_process(image, config):

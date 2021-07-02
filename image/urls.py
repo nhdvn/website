@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import upload, video, stream
+from .views import *
 
 urlpatterns = [
     path('', upload, name = 'upload'),
-    path('stream', stream, name = 'stream'),
+    path('frame', frame, name = 'frame'),
     path('video', video, name = 'video')
 ]
