@@ -10,7 +10,7 @@ $('#object').on('change', function() {
 	}
 });
 
-$('.change-image').on('click', function() {
+$('#clear-image').on('click', function() {
 	$control = $(this);			
 	$('#object').val('');	
 	$preview = $('.image-preview');
