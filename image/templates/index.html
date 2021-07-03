@@ -12,13 +12,18 @@
 <body>
     <form class="container" action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" accept="image/*" name="imageField" id="imageInput">
-	    <label for="imageInput" class="image-button"><i class="far fa-image"></i> Browse</label>
+        <input type="file" accept="image/*" name="object" id="object">
+	    <label for="object" class="label-button"><i class="far fa-image"></i> Browse</label>
 
         <button type="submit"><i class="fa fa-upload"></i> Upload</button>
-        <label class="change-image"><i class="fas fa-trash-alt"></i> Empty</label>
+        <label class="label-button"><i class="fas fa-trash-alt"></i> Empty</label>
+        <input type="hidden" id="model" name="model" value="coco">
 
-        <input type="number" id="imageConfig" name="imageConfig" min="0" max="1" step="0.01" value="0.4">
+        <div id="wrap-config">
+            <input type="number" id="config" name="config" min="0" max="1" step="0.01" value="0.4">
+            <label for="coco"><input type="radio" name="model" onclick="handleClick(this)" value="coco" checked="true"> Coco</label>
+            <label for="fruits"><input type="radio" name="model" onclick="handleClick(this);" value="fruits"> Fruits</label>
+        </div>
     </form>
     <div class="preview">
         <img src="{{ path }}" class="image-preview">

@@ -3,7 +3,7 @@
   padding: 10px;
   border-radius: 5pt;
   min-width: 120px;
-  height: 200px;
+  height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -25,15 +25,26 @@
   margin: auto;
 }
 
-.container #imageInput {
+.container #object {
   display: none;
 }
 
-.container #imageConfig {
-  height: 25px;
+.container #wrap-config {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-self: center;
+  padding: 15px;
+  border: solid 1px #ddd;
 }
 
-.container label {
+.container #config {
+  height: 25px;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+
+.container .label-button {
   display: block;
   color: #FFF;
   background: #0079bf;

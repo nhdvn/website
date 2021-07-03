@@ -1,5 +1,5 @@
 
-$('#imageInput').on('change', function() {
+$('#object').on('change', function() {
 	$input = $(this);
 	if ($input.val().length > 0) {
 		fileReader = new FileReader();
@@ -12,7 +12,11 @@ $('#imageInput').on('change', function() {
 
 $('.change-image').on('click', function() {
 	$control = $(this);			
-	$('#imageInput').val('');	
+	$('#object').val('');	
 	$preview = $('.image-preview');
 	$preview.attr('src', '');
 });
+
+function handleClick(myRadio) {
+    $('#models').val(myRadio.value)
+}

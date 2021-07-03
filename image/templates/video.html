@@ -147,9 +147,8 @@
                 processData: false,
                 contentType: false,
                 mimeType: 'multipart/form-data',
-                success: function (out) {
-                    let data = JSON.parse(out)
-                    $("#frame").attr("src", data.path)
+                success: function (result) {
+                    $("#frame").attr("src", JSON.parse(result).path)
                 }
             });  
         });  

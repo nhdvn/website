@@ -18,10 +18,12 @@ def upload(request):
     if request.method == 'POST':
         action = Upload(request.POST, request.FILES)
         if action.is_valid():
-            object = action.cleaned_data.get('imageField')
-            config = action.cleaned_data.get('imageConfig')
+            object = action.cleaned_data.get('object')
+            config = action.cleaned_data.get('config')
+            model = action.cleaned_data.get('model')
+            print(model)
             image, path = create(object)
-            true_process(image, config)
+            true_process(image, config, model)
         else:
             print('No Image Uploaded')
     return render(request, 'index.html', {'path': path})
@@ -38,19 +40,27 @@ def video(request):
     return render(request, 'video.html')
 
 
-def pre_process(data, path):
+def mkdir(file_name):
+    path = Path.joinpath(media_root, 'video')
+    Path(path).mkdir(parents = True, exist_ok = True)
+    path = Path.joinpath(path, file_name)
+    return path
+
+
+def write(data, file):
+    path = mkdir(file)
     image = open(path, "wb")
     image.write(data)
-    true_process(path, 0.4)
+    test_process(path, 0.4)
     image.close()
 
 
 def frame(request):
     if request.method == 'POST':
         data = b64decode(request.POST.get('data'))
-        name = random.choices(string.ascii_lowercase, k = 7)
-        name = ''.join(name) + '.jpg'
-        path = Path.joinpath(media_root, 'video', name)
-        pre_process(data, path)
-        result = {'path': '/media/video/' + name}
-    return HttpResponse(json.dumps(result), content_type='application/json')
+        file = ''.join(random.choices(string.ascii_lowercase, k = 7)) + '.jpg'
+        write(data, file)
+        result = {'path': '/media/video/' + file}
+        return HttpResponse(json.dumps(result), content_type = 'application/json')
+    else:
+        return HttpResponse()
