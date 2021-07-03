@@ -48,6 +48,11 @@
             width: 600px;
             height: 500px;
         }
+        #config {
+            font-size: 18px !important;
+            font-weight: 500 !important;
+            margin-right: 40px;
+        }
     </style>  
 </head>
 <body>
@@ -64,7 +69,14 @@
         
             <div class="col">    
                 <div class="child">    
-                    <h4>Captured Image</h4> <input type="button" class="btn btn-primary" id="btnSave" name="btnSave" value="Upload Image" />    
+                    <h4>
+                        <label for="config" value="threshold">Threshold</label>
+                        <input type="number" id="config" name="config" min="0" max="1" step="0.01" value="0.4">
+                        <input type="hidden" id="model" name="model" value="coco">
+                        <label for="coco"><input type="radio" name="model" onclick="handleClick(this)" value="coco" checked="true"> Coco</label>
+                        <label for="fruits"><input type="radio" name="model" onclick="handleClick(this);" value="fruits"> Fruits</label>
+                    </h4>
+                    <input type="button" class="btn btn-primary" id="btnSave" name="btnSave" value="Upload Image" />    
                 </div>    
                 <!-- Webcam video snapshot -->    
                 <img src="" alt="" id="frame" style="display: none;">
@@ -116,7 +128,11 @@
         }  
     </script>  
       
-    <script type="text/javascript">  
+    <script type="text/javascript">
+
+        function handleClick(myRadio) {
+            $('#model').val(myRadio.value)
+        }
 
         $("#btnCapture").click(function () {  
             let canvas = document.createElement('canvas');  
@@ -134,10 +150,15 @@
        
         $("#btnSave").click(function () {
             let base64data = $("#frame").attr('src')  
-            base64data = base64data.replace('data:image/png;base64,', '');  
+            base64data = base64data.replace('data:image/png;base64,', '')
+
+            let config = $("#config").val()
+            let model = $("#model").val()
 
             var data = new FormData()
             data.append('data', base64data)
+            data.append('config', config)
+            data.append('model', model)
             data.append('csrfmiddlewaretoken', "{{ csrf_token }}")
 
             $.ajax({  

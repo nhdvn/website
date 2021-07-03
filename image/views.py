@@ -21,7 +21,6 @@ def upload(request):
             object = action.cleaned_data.get('object')
             config = action.cleaned_data.get('config')
             model = action.cleaned_data.get('model')
-            print(model)
             image, path = create(object)
             true_process(image, config, model)
         else:
@@ -40,27 +39,31 @@ def video(request):
     return render(request, 'video.html')
 
 
-def mkdir(file_name):
+def mkfile():
+    name = random.choices(string.ascii_lowercase, k = 7)
+    name = ''.join(name) + '.jpg'
     path = Path.joinpath(media_root, 'video')
     Path(path).mkdir(parents = True, exist_ok = True)
-    path = Path.joinpath(path, file_name)
-    return path
+    return name, Path.joinpath(path, name)
 
 
-def write(data, file):
-    path = mkdir(file)
+def write(data):
+    name, path = mkfile()
     image = open(path, "wb")
     image.write(data)
-    test_process(path, 0.4)
     image.close()
+    return name, path
 
 
 def frame(request):
     if request.method == 'POST':
+        config = request.POST.get('config')
+        model = request.POST.get('model')
         data = b64decode(request.POST.get('data'))
-        file = ''.join(random.choices(string.ascii_lowercase, k = 7)) + '.jpg'
-        write(data, file)
-        result = {'path': '/media/video/' + file}
+        name, path = write(data)
+
+        true_process(path, float(config), model)
+        result = {'path': '/media/video/' + name}
         return HttpResponse(json.dumps(result), content_type = 'application/json')
     else:
         return HttpResponse()

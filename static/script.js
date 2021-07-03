@@ -18,5 +18,5 @@ $('#clear-image').on('click', function() {
 });
 
 function handleClick(myRadio) {
-    $('#models').val(myRadio.value)
+    $('#model').val(myRadio.value)
 }
