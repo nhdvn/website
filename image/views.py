@@ -1,14 +1,14 @@
 
 from django.shortcuts import render
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from base64 import b64decode
 from pathlib import Path
 from .forms import Upload
 from .models import Image
-from .utils import test_process
-from .utils import true_process
+from .utils import true_process, video_process, change_config
 import json, random, string
+import cv2
 
 media_root = settings.MEDIA_ROOT
 
@@ -67,3 +67,23 @@ def frame(request):
         return HttpResponse(json.dumps(result), content_type = 'application/json')
     else:
         return HttpResponse()
+
+def save_config(request):
+    if request.method == 'POST':
+        config = float(request.POST.get('config'))
+        model = request.POST.get('model')
+
+        change_config(config, model)
+
+        return HttpResponse()
+    else:
+        return HttpResponse()
+
+def stream(request):
+    return StreamingHttpResponse(extract(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+def extract():
+    cap = cv2.VideoCapture(0)
+
+    for frame in video_process(cap):
+        yield frame

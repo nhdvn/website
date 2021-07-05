@@ -5,25 +5,33 @@ from PIL import Image as ImagePIL
 
 from .utils import *
 
-# model_path = '/home/wan/Workspaces/hcmus_machine_learning/YOLO/website/yolo/models/yolov4-tiny_1_3_416_416_static.onnx'
-# namesfile = '/home/wan/Workspaces/hcmus_machine_learning/YOLO/website/yolo/data/coco.names'
+session_coco = onnxruntime.InferenceSession('yolo/models/yolov4-tiny_1_3_416_416_static.onnx')
+session_fruits = onnxruntime.InferenceSession('yolo/models/yolov4-tiny-fruits_1_3_416_416_static.onnx')
 
-model_path = '/home/potato/website/yolo/models/yolov4-tiny_1_3_416_416_static.onnx'
-namesfile = '/home/potato/website/yolo/data/coco.names'
+class_names_coco = load_class_names('yolo/data/coco.names')
+class_names_fruits = load_class_names('yolo/data/fruits.names')
 
+session = session_coco
+class_names = class_names_coco
+
+threshold = 0.4
+
+def set_threshold(thresh):
+    global threshold
+    threshold = thresh
 
 def set_model_data(model_type):
 
-    global model_path, namesfile
+    global session, class_names
 
     if model_type == 'coco':
-        model_path = '/home/potato/website/yolo/models/yolov4-tiny_1_3_416_416_static.onnx'
-        namesfile = '/home/potato/website/yolo/data/coco.names'
+        session = session_coco
+        class_names = class_names_coco
         return
 
     if model_type == 'fruits':
-        model_path = '/home/potato/website/yolo/models/yolov4-tiny-fruits_1_3_416_416_static.onnx'
-        namesfile = '/home/potato/website/yolo/data/fruits.names'
+        session = session_fruits
+        class_names = class_names_fruits
         return
 
 
@@ -43,8 +51,6 @@ def detect(session, image_src, conf_thresh):
 
     boxes = post_processing(img_in, conf_thresh, 0.6, outputs)    
 
-    class_names = load_class_names(namesfile)
-
     image_dst = plot_boxes_cv2(image_src, boxes[0], class_names=class_names)
 
     return image_dst
@@ -54,8 +60,6 @@ def predict(image_path, conf_thresh, model_type):
 
     set_model_data(model_type)
 
-    session = onnxruntime.InferenceSession(model_path)
-
     image_src = np.array(ImagePIL.open(image_path).convert('RGB'))
 
     image_dst = detect(session, image_src, conf_thresh)
@@ -63,9 +67,7 @@ def predict(image_path, conf_thresh, model_type):
     return image_dst
 
 
-def predict_video(cap, conf_thresh):
-
-    session = onnxruntime.InferenceSession(model_path)
+def predict_video(cap):
 
     while True:
         ret, frame = cap.read()
@@ -75,7 +77,7 @@ def predict_video(cap, conf_thresh):
             print("Error: failed to capture image")
             break
 
-        image_dst = detect(session, frame, conf_thresh)
+        image_dst = detect(session, frame, threshold)
 
         cv2.imwrite(path, image_dst)
         yield (b'--frame\r\n'

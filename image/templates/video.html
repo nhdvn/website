@@ -60,14 +60,6 @@
         <p><span id="errorMsg"></span></p>    
         <div class="row">    
             <div class="col">    
-                <!-- Here we streaming video from webcam -->    
-                <div class="child">    
-                    <h4>Webcam Video</h4> <button class="btn btn-primary" id="btnCapture">Capture Frame</button>    
-                </div>    
-                <video id="video" playsinline autoplay></video>    
-            </div>    
-        
-            <div class="col">    
                 <div class="child">    
                     <h4>
                         <label for="config" value="threshold">Threshold</label>
@@ -76,10 +68,10 @@
                         <label for="coco"><input type="radio" name="model" onclick="handleClick(this)" value="coco" checked="true"> Coco</label>
                         <label for="fruits"><input type="radio" name="model" onclick="handleClick(this);" value="fruits"> Fruits</label>
                     </h4>
-                    <input type="button" class="btn btn-primary" id="btnSave" name="btnSave" value="Upload Image" />    
+                    <input type="button" class="btn btn-primary" id="btnSave" name="btnSave" value="Save config" />    
                 </div>    
                 <!-- Webcam video snapshot -->    
-                <img src="" alt="" id="frame" style="display: none;">
+                <img src="{% url 'stream' %}" alt="">
             </div>    
         </div>    
     </div>
@@ -92,85 +84,30 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-
-    <script type="text/javascript">  
-        var video = document.querySelector("#video");  
-      
-        // Basic settings for the video to get from Webcam  
-        const constraints = {  
-            audio: false,  
-            video: {  
-                width: 600, height: 500  
-            }  
-        };  
-      
-        // This condition will ask permission to user for Webcam access  
-        if (navigator.mediaDevices.getUserMedia) {  
-            navigator.mediaDevices.getUserMedia(constraints)  
-                .then(function (stream) {  
-                    video.srcObject = stream;  
-                })  
-                .catch(function (err0r) {  
-                    console.log("Something went wrong!");  
-                });  
-        }  
-      
-        function stop(e) {  
-            var stream = video.srcObject;  
-            var tracks = stream.getTracks();  
-      
-            for (var i = 0; i < tracks.length; i++) {  
-                var track = tracks[i];  
-                track.stop();  
-            }  
-            video.srcObject = null;  
-        }  
-    </script>  
       
     <script type="text/javascript">
 
         function handleClick(myRadio) {
             $('#model').val(myRadio.value)
         }
-
-        $("#btnCapture").click(function () {  
-            let canvas = document.createElement('canvas');  
-            canvas.width = 600
-            canvas.height = 500
-            let context = canvas.getContext('2d');  
-
-            context.translate(600, 0);
-            context.scale(-1, 1);
-            context.drawImage(video, 0, 0);
-
-            $("#frame").attr("src", canvas.toDataURL("image/png"))
-            $("#frame").attr("style", "display: block")
-        });  
        
         $("#btnSave").click(function () {
-            let base64data = $("#frame").attr('src')  
-            base64data = base64data.replace('data:image/png;base64,', '')
 
             let config = $("#config").val()
             let model = $("#model").val()
 
             var data = new FormData()
-            data.append('data', base64data)
             data.append('config', config)
             data.append('model', model)
             data.append('csrfmiddlewaretoken', "{{ csrf_token }}")
 
             $.ajax({  
                 type: 'POST',
-                url: '/frame',
+                url: '/save_config',
                 data: data,
                 processData: false,
                 contentType: false,
-                mimeType: 'multipart/form-data',
-                success: function (result) {
-                    $("#frame").attr("src", JSON.parse(result).path)
-                }
+                mimeType: 'multipart/form-data'
             });  
         });  
     </script>  
